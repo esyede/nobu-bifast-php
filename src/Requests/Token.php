@@ -15,6 +15,12 @@ class Token
     {
         $endpoint = '/v1.0/access-token/b2b';
         $dateAtom = Helper::getDateAtom();
+        $strSign = $this->config->getClientKey() . '|' . $dateAtom;
+        $privateKey = file_get_contents($this->config->getPrivateKeyFile());
+        $base64RsaSignature = Helper::makeBase64RsaSignature(
+            $strSign,
+            $privateKey
+        );
         $body = [
             'grant_type' => 'client_credentials',
             'additionalInfo' => (object) [
@@ -26,7 +32,7 @@ class Token
             'Content-Type: application/json',
             'X-TIMESTAMP: ' . $dateAtom,
             'X-CLIENT-KEY: ' . $this->config->getClientKey(),
-            'X-SIGNATURE: ' . $this->config->getBase64Signature(),
+            'X-SIGNATURE: ' . $base64RsaSignature,
         ];
 
         $endpoint = $this->config->getBaseUrl() . $endpoint;
@@ -42,9 +48,11 @@ class Token
             CURLOPT_POSTFIELDS => json_encode($body),
         ]);
 
-        curl_setopt($ch, CURLOPT_VERBOSE, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        if ($this->config->isDevelopment()) {
+            curl_setopt($ch, CURLOPT_VERBOSE, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        }
 
         $raw = curl_exec($ch);
         $errors = curl_error($ch);

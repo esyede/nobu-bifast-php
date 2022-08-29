@@ -10,13 +10,13 @@ use Esyede\NobuBifast\Transfers\Transfer;
 use Esyede\NobuBifast\Transfers\Status;
 use Esyede\NobuBifast\Transfers\Inquiry;
 
-$privateKeyFile = __DIR__ . '/myprivkey.pem';
-$publicKeyFile = __DIR__ . '/mypubkey.pem';
+$privateKeyFile = __DIR__ . '/../private_key.pem';
+$publicKeyFile = __DIR__ . '/../public_key.pem';
 
-$clientKey = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxx';
-$partnerId = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx';
-$clientSecret = 'xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxx';
-$signatureBase64 = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+$clientKey = 'xxxxxxxxxxxxxxxxxxxxxxxxxxx1';
+$partnerId = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+$clientSecret = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+$signatureBase64 = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +29,6 @@ $config = (new Config())
     ->setClientKey($clientKey) // X-CLIENT-KEY
     ->setPartnerId($partnerId) // X-PARTNER-ID
     ->setClientSecret($clientSecret)
-    ->setBase64Signature($signatureBase64)
     ->setDevelopment(true);
 
 /*

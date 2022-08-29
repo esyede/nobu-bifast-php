@@ -40,4 +40,20 @@ class Helper
     {
         return (new DateTime($time, new DateTimeZone($timezone)))->format(DateTime::ATOM);
     }
+
+    public static function makeBase64RsaSignature($data, $privateKey)
+    {
+        $generateSignature = openssl_sign(
+            $data,
+            $output,
+            $privateKey,
+            OPENSSL_ALGO_SHA256
+        );
+
+        if (true !== $generateSignature) {
+            return null;
+        }
+
+        return base64_encode($output);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace Esyede\NobuBifast\Requests;
 
+use Esyede\NobuBifast\Exceptions\NobuBiFastException;
 use ReflectionClass;
 
 class Config
@@ -11,7 +12,6 @@ class Config
 
     private $privateKeyFile;
     private $publicKeyFile;
-    private $base64Signature;
     private $clientKey;
     private $clientSecret;
     private $partnerId;
@@ -59,12 +59,6 @@ class Config
         return $this;
     }
 
-    public function setBase64Signature($base64SignatureString)
-    {
-        $this->base64Signature = $base64SignatureString;
-        return $this;
-    }
-
     public function setDevelopment($state = true)
     {
         $this->isDevelopment = boolval($state);
@@ -101,11 +95,6 @@ class Config
         return $this->clientSecret;
     }
 
-    public function getBase64Signature()
-    {
-        return $this->base64Signature;
-    }
-
     public function isDevelopment()
     {
         return $this->isDevelopment;
@@ -123,7 +112,6 @@ class Config
         return [
             'privateKeyFile' => $this->privateKeyFile,
             'publicKeyFile' => $this->publicKeyFile,
-            'base64Signature' => $this->base64Signature,
             'clientKey' => $this->clientKey,
             'clientSecret' => $this->clientSecret,
             'partnerId' => $this->partnerId,
@@ -155,7 +143,7 @@ class Config
 
         foreach ($properties as $property) {
             if (null === $this->{$property->name}) {
-                throw new Exceptions\NobuBiFastException(sprintf(
+                throw new NobuBiFastException(sprintf(
                     'The %s config needs to be set before using this library',
                     $property->name
                 ));

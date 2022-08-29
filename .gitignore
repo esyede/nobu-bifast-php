@@ -43,3 +43,10 @@ yarn-error.log
 
 # Others
 *.phar
+
+# Key Pair
+/public_key.pem
+/private_key.pem
+
+# example
+/example.php

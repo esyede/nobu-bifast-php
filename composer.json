@@ -1,0 +1,17 @@
+{
+    "name": "esyede/nobu-bifast-php",
+    "description": "Integration library for Nobu BI-Fast transfer API",
+    "keywords": ["bank", "nobu-international", "bi-fast"],
+    "homepage": "https://github.com/esyede/nobu-bifast-php",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^5.4|^7|^8",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Esyede\\NobuBifast\\": "src"
+        }
+    }
+}

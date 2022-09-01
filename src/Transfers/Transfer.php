@@ -41,6 +41,12 @@ class Transfer
         return $this;
     }
 
+    public function setBeneficiaryBankCode($bankCode)
+    {
+        $this->beneficiaryBankCode = $bankCode;
+        return $this;
+    }
+
     public function setBeneficiaryAccountName($accountName)
     {
         $this->beneficiaryAccountName = $accountName;
@@ -90,6 +96,7 @@ class Transfer
         return [
             'amount' => $this->amount,
             'partnerReferenceNo' => $this->partnerReferenceNo,
+            'beneficiaryBankCode' => $this->beneficiaryBankCode,
             'beneficiaryAccountName' => $this->beneficiaryAccountName,
             'beneficiaryAccountNo' => $this->beneficiaryAccountNo,
             'customerReference' => $this->customerReference,
@@ -135,11 +142,11 @@ class Transfer
 
     public function get()
     {
-        $this->vallidate();
+        $this->validate();
 
         $endpoint = '/v1.0/transfer/fast-payment';
         $payloads = $this->toArray();
-        $payloads['amount'] = (object) [
+        $payloads['amount'] = [
             'value' => $payloads['amount'],
             'currency' => 'IDR',
         ];

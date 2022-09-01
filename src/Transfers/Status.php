@@ -92,7 +92,7 @@ class Status
 
     public function get()
     {
-        $this->vallidate();
+        $this->validate();
 
         $endpoint = '/v1.0/transfer/status';
         $payloads = $this->toArray();

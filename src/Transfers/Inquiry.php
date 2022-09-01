@@ -115,7 +115,7 @@ class Inquiry
 
    public function get()
    {
-       $this->vallidate();
+       $this->validate();
 
        $endpoint = '/v1.0/account-inquiry/fast-payment';
        $payloads = $this->toArray();

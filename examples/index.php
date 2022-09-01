@@ -13,7 +13,7 @@ use Esyede\NobuBifast\Transfers\Inquiry;
 $privateKeyFile = __DIR__ . '/../private_key.pem';
 $publicKeyFile = __DIR__ . '/../public_key.pem';
 
-$clientKey = 'xxxxxxxxxxxxxxxxxxxxxxxxxxx1';
+$clientKey = 'xxxxxxxxxxxxxxxxxxxxxxxxxxx';
 $partnerId = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 $clientSecret = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 $signatureBase64 = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
@@ -47,8 +47,8 @@ exit;
 |--------------------------------------------------------------------------
 */
 $data = json_decode($token);
-$accessToken = $data->accessToken;
-$uniqueRefDaily = (new \DateTime('now', new \DateTimezone('Asia/Jakarta')))->format('YmdHi'); // max 12 char
+$accessToken = $data->response->decoded->accessToken;
+$uniqueRefDaily = (new \DateTime('now', new \DateTimezone('Asia/Jakarta')))->format('His').uniqid(); // max 12 char
 
 /*
 |--------------------------------------------------------------------------
@@ -64,25 +64,26 @@ $request = new Request($config, $accessToken, $uniqueRefDaily);
 */
 
 //! Contoh transfer
-$transfer = (new Transfer())
+$transfer = (new Transfer($request))
     ->setPartnerReferenceNo('2022041309130002')
     ->setAmount(100000)
-    ->setBeneficiaryAccountName('ANUGERAH QUBA MANDIRI')
+    ->setBeneficiaryBankCode('SIHBIDJ1')
     ->setBeneficiaryAccountNo('3604107554096')
+    ->setBeneficiaryAccountName('ANUGERAH QUBA MANDIRI')
     ->setSourceAccountNo('10110889307')
-    // ->setAdditionalInfo(['foo' => 'bar']) // opsional
-    // ->setCustomerReference('T00000001') // opsional
-    ->setTransactionDate('2022-04-13T09:08:56-07:00');
+    ->setAdditionalInfo(['foo' => 'bar']) // opsional
+    ->setCustomerReference('T00000001') // opsional
+    ->setTransactionDate('2022-09-01T15:32:00+07:00');
 
 echo $transfer->get();
 exit;
 
 
 //! Contoh req inquiry
-$inquiry = (new Inquiry())
+$inquiry = (new Inquiry($request))
     ->setBeneficiaryBankCode('SIHBIDJ1')
     ->setBeneficiaryAccountNo('11234567890')
-    ->setPartnerRefNo('202010290000000NOB0017')
+    ->setPartnerReferenceNo('202010290000000NOB0017')
     ->setAmount(100000)
     // ->setSourceAccountBankNo('10110889307') // optional
     // ->setAdditionalInfo(['foo' => 'bar']) // optional
@@ -93,7 +94,7 @@ exit;
 
 
 //! Contoh req cek status
-$status = (new Status())
+$status = (new Status($request))
     ->setServiceCode('36')
     // ->setAdditionalInfo(['foo' => 'bar']) // optional
     ->setAmount(100000);

@@ -16,13 +16,11 @@ class Helper
         array $payloads = []
     ) {
         $httpMethod = strtoupper($httpMethod);
-        $relativeURL = '/' . ltrim($relativeURL, '/');
+        $relativeURL = '/' . trim($relativeURL, '/') . '/';
         $hash = '';
 
         if (count($payloads) > 0) {
-            ksort($payloads);
             $hash = json_encode($payloads);
-            $hash = preg_replace('/[[:blank:]]+/', '', $hash);
         }
 
         $hash = hash('sha256', $hash);
@@ -55,5 +53,26 @@ class Helper
         }
 
         return base64_encode($output);
+    }
+
+    public static function getClientIp()
+    {
+        $ip = '';
+
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+            $ip = $ips[0];
+        } elseif (isset($_SERVER['REMOTE_ADDR'])) {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
+            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        }
+
+        // localhost, ambil IP ISP
+        if (in_array($ip, ['::1', '127.0.0.1'])) {
+            $ip = file_get_contents('https://api.ipify.org');
+        }
+
+        return $ip;
     }
 }

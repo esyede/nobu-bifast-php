@@ -12,6 +12,7 @@ class Inquiry
     private $beneficiaryAccountNo;
     private $partnerReferenceNo;
     private $sourceAccountBankId;
+    private $sourceAccountBankNo;
     private $additionalInfo = [];
     private $amount;
 
@@ -62,6 +63,12 @@ class Inquiry
         return $this;
     }
 
+    public function setSourceAccountBankNo($bankNo)
+    {
+        $this->sourceAccountBankNo = $bankNo;
+        return $this;
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Getters
@@ -76,6 +83,7 @@ class Inquiry
            'beneficiaryAccountNo' => $this->beneficiaryAccountNo,
            'partnerReferenceNo' => $this->partnerReferenceNo,
            'sourceAccountBankId' => $this->sourceAccountBankId,
+           'sourceAccountBankNo' => $this->sourceAccountBankNo,
            'additionalInfo' => $this->additionalInfo,
        ];
    }
@@ -119,7 +127,7 @@ class Inquiry
 
        $endpoint = '/v1.0/account-inquiry/fast-payment';
        $payloads = $this->toArray();
-       $payloads['amount'] = (object) [
+       $payloads['amount'] = [
            'value' => $payloads['amount'],
            'currency' => 'IDR',
        ];

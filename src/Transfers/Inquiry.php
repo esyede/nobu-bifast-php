@@ -13,8 +13,7 @@ class Inquiry
     private $partnerReferenceNo;
     private $sourceAccountBankId;
     private $sourceAccountBankNo;
-    private $additionalInfo = [];
-    private $amount;
+    private $proxyUser = null;
 
     public function __construct(Request $request)
     {
@@ -51,12 +50,6 @@ class Inquiry
         return $this;
     }
 
-    public function setAmount($amount)
-    {
-        $this->amount = $amount . '.00';
-        return $this;
-    }
-
     public function setSourceAccountBankId($bankId)
     {
         $this->sourceAccountBankId = $bankId;
@@ -69,6 +62,12 @@ class Inquiry
         return $this;
     }
 
+    public function setProxyUser($user)
+    {
+        $this->proxyUser = $user;
+        return $this;
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Getters
@@ -78,13 +77,14 @@ class Inquiry
    public function toArray()
    {
        return [
-           'amount' => $this->amount,
            'beneficiaryBankCode' => $this->beneficiaryBankCode,
            'beneficiaryAccountNo' => $this->beneficiaryAccountNo,
            'partnerReferenceNo' => $this->partnerReferenceNo,
-           'sourceAccountBankId' => $this->sourceAccountBankId,
-           'sourceAccountBankNo' => $this->sourceAccountBankNo,
-           'additionalInfo' => $this->additionalInfo,
+           'additionalInfo' => [
+                'sourceAccountBankId' => $this->sourceAccountBankId,
+                'sourceAccountBankNo' => $this->sourceAccountBankNo,
+                'proxyUser' => $this->proxyUser
+            ]
        ];
    }
 
@@ -127,10 +127,6 @@ class Inquiry
 
        $endpoint = '/v1.0/account-inquiry/fast-payment';
        $payloads = $this->toArray();
-       $payloads['amount'] = [
-           'value' => $payloads['amount'],
-           'currency' => 'IDR',
-       ];
 
        return $this->request->post($endpoint, $payloads);
    }

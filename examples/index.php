@@ -10,13 +10,12 @@ use Esyede\NobuBifast\Transfers\Transfer;
 use Esyede\NobuBifast\Transfers\Status;
 use Esyede\NobuBifast\Transfers\Inquiry;
 
-$privateKeyFile = __DIR__ . '/../private_key.pem';
-$publicKeyFile = __DIR__ . '/../public_key.pem';
+$privateKeyFile = dirname(__DIR__) . '/private_key.pem';
+$publicKeyFile = dirname(__DIR__) . '/public_key.pem';
 
-$clientKey = 'xxxxxxxxxxxxxxxxxxxxxxxxxxx';
-$partnerId = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
-$clientSecret = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
-$signatureBase64 = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+$clientKey = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+$partnerId = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+$clientSecret = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
 
 /*
 |--------------------------------------------------------------------------
@@ -37,9 +36,6 @@ $config = (new Config())
 |--------------------------------------------------------------------------
 */
 $token = (new Token($config))->get(); // Json data berisi string bearer token
-
-echo $token;
-exit;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,39 +61,49 @@ $request = new Request($config, $accessToken, $uniqueRefDaily);
 
 //! Contoh transfer
 $transfer = (new Transfer($request))
-    ->setPartnerReferenceNo('2022041309130002')
+    ->setPartnerReferenceNo(date('YmdHis'))
     ->setAmount(100000)
     ->setBeneficiaryBankCode('SIHBIDJ1')
-    ->setBeneficiaryAccountNo('3604107554096')
+    ->setBeneficiaryAccountNo('510654300')
     ->setBeneficiaryAccountName('ANUGERAH QUBA MANDIRI')
     ->setSourceAccountNo('10110889307')
-    ->setAdditionalInfo(['foo' => 'bar']) // opsional
-    ->setCustomerReference('T00000001') // opsional
-    ->setTransactionDate('2022-09-01T15:32:00+07:00');
+    ->setAdditionalInfo([
+        'beneficiaryAccountType' => 'SVGS',
+        'beneficiaryType' => '01',
+        'beneficiaryNat' => '032456378311000',
+        'beneficiaryResStatus' => '01',
+        'beneficiaryCityCode' => '2391',
+        'sourceAccountBankId' => 'LFIBIDJI',
+        'proxyUser' => 'testing@gmail.com',
+    ])
+    ->setCustomerReference(uniqid()) // opsional
+    ->setTransactionDate((new \DateTime('now', new \DateTimezone('Asia/Jakarta')))->format('c'));
 
-echo $transfer->get();
+$tf = $transfer->get();
+echo json_encode(json_decode($tf), JSON_PRETTY_PRINT);
 exit;
 
 
 //! Contoh req inquiry
 $inquiry = (new Inquiry($request))
     ->setBeneficiaryBankCode('SIHBIDJ1')
-    ->setBeneficiaryAccountNo('11234567890')
-    ->setPartnerReferenceNo('202010290000000NOB0017')
-    ->setAmount(100000)
-    // ->setSourceAccountBankNo('10110889307') // optional
-    // ->setAdditionalInfo(['foo' => 'bar']) // optional
-    ->setSourceAccountBankId('LFIBIDJ1');
+    ->setBeneficiaryAccountNo('510654300')
+    ->setPartnerReferenceNo(date('YmdHis'))
+    ->setSourceAccountBankId('LFIBIDJ1')
+    ->setSourceAccountBankNo('10110889307')
+    ->setProxyUser('testing@gmail.com');
 
-echo $inquiry->get();
+$inq = $inquiry->get();
+echo json_encode(json_decode($inq), JSON_PRETTY_PRINT);
 exit;
 
 
 //! Contoh req cek status
 $status = (new Status($request))
     ->setServiceCode('36')
-    // ->setAdditionalInfo(['foo' => 'bar']) // optional
-    ->setAmount(100000);
+    ->setOriginalPartnerReferenceNo('XXXXXXXXXXXXXXXXX') // sama dengan saat request API transfer
+    ->setOriginalReferenceNo('XXXXXXXXXXXXX'); // sama dengan saat request API transfer
 
-echo $status->get();
+$s = $status->get();
+echo json_encode(json_decode($s), JSON_PRETTY_PRINT);
 exit;

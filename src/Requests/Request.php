@@ -45,6 +45,8 @@ class Request
             'X-SIGNATURE: ' . $signature
         ];
 
+        $response_headers = [];
+
         $endpoint = $this->config->getBaseUrl() . $endpoint;
 
         $ch = curl_init();
@@ -65,6 +67,15 @@ class Request
             curl_setopt($ch, CURLOPT_VERBOSE, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_HEADERFUNCTION, function($curl, $header) use (&$response_headers) {
+                $len = strlen($header);
+                $header = explode(':', $header, 2);
+                if (count($header) < 2) {
+                    return $len;
+                }
+                $response_headers[trim($header[0])] = trim($header[1]);
+                return $len;
+            });
         }
 
         $raw = curl_exec($ch);
@@ -80,12 +91,15 @@ class Request
         }
 
         $results = [
-            'endpoint' => $endpoint,
-            'method' => $method,
-            'headers' => $headers,
-            'body' => $payloads,
+            'request' => [
+                'endpoint' => $endpoint,
+                'method' => $method,
+                'headers' => $headers,
+                'body' => $payloads,
+            ],
             'response' => [
-                'decoded' => $decoded,
+                'headers' => $response_headers,
+                'body' => $decoded,
                 'raw' => $raw,
                 'errors' => $errors,
             ],

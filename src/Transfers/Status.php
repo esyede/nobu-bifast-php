@@ -9,8 +9,8 @@ class Status
 {
     private $request;
     private $serviceCode;
-    private $amount;
-    private $additionalInfo = [];
+    private $originalPartnerReferenceNo;
+    private $originalReferenceNo;
 
     public function __construct(Request $request)
     {
@@ -29,16 +29,15 @@ class Status
         return $this;
     }
 
-    public function setAmount($amount)
+    public function setOriginalPartnerReferenceNo($ref)
     {
-        $this->amount = $amount . '.00';
+        $this->originalPartnerReferenceNo = $ref;
         return $this;
     }
 
-    // optional
-    public function setAdditionalInfo(array $infos)
+    public function setOriginalReferenceNo($no)
     {
-        $this->additionalInfo = $infos;
+        $this->originalReferenceNo = $no;
         return $this;
     }
 
@@ -52,8 +51,8 @@ class Status
     {
         return [
             'serviceCode' => $this->serviceCode,
-            'amount' => $this->amount,
-            'additionalInfo' => $this->additionalInfo,
+            'originalPartnerReferenceNo' => $this->originalPartnerReferenceNo,
+            'originalReferenceNo' => $this->originalReferenceNo,
         ];
     }
 
@@ -73,8 +72,7 @@ class Status
         $properties = $this->toArray();
 
         foreach ($properties as $key => $value) {
-            if (! in_array($key, ['additionalInfo'])
-            && (is_null($properties[$key]) || empty($properties[$key]))) {
+            if (is_null($properties[$key]) || empty($properties[$key])) {
                 throw new NobuBiFastException(sprintf(
                     'The %s needs to be set before calling %s::get()',
                     $key,
@@ -92,14 +90,10 @@ class Status
 
     public function get()
     {
-        $this->vallidate();
+        $this->validate();
 
         $endpoint = '/v1.0/transfer/status';
         $payloads = $this->toArray();
-        $payloads['amount'] = (object) [
-            'value' => $payloads['amount'],
-            'currency' => 'IDR',
-        ];
 
         return $this->request->post($endpoint, $payloads);
     }

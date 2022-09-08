@@ -7,7 +7,7 @@ class Request
     private $config;
     private $accessToken;
     private $uniqueRefDaily;
-    private $serverIpv4;
+    private $ipAddress;
     private $dateAtom;
 
     public function __construct(Config $config, $accessToken, $uniqueRefDaily)
@@ -15,7 +15,7 @@ class Request
         $this->config = $config;
         $this->accessToken = $accessToken;
         $this->uniqueRefDaily = $uniqueRefDaily;
-        $this->serverIpv4 = gethostbyname(gethostname());
+        $this->ipAddress = Helper::getClientIp();
         $this->dateAtom = Helper::getDateAtom();
     }
 
@@ -41,8 +41,11 @@ class Request
             'X-TIMESTAMP: ' . $this->dateAtom,
             'X-EXTERNAL-ID: ' . $this->uniqueRefDaily,
             'X-PARTNER-ID: ' . $this->config->getPartnerId(),
-            'X-IP-ADDRESS: ' . $this->serverIpv4,
+            'X-IP-ADDRESS: ' . $this->ipAddress,
+            'X-SIGNATURE: ' . $signature
         ];
+
+        $response_headers = [];
 
         $endpoint = $this->config->getBaseUrl() . $endpoint;
 
@@ -60,6 +63,21 @@ class Request
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payloads));
         }
 
+        if ($this->config->isDevelopment()) {
+            curl_setopt($ch, CURLOPT_VERBOSE, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_HEADERFUNCTION, function($curl, $header) use (&$response_headers) {
+                $len = strlen($header);
+                $header = explode(':', $header, 2);
+                if (count($header) < 2) {
+                    return $len;
+                }
+                $response_headers[trim($header[0])] = trim($header[1]);
+                return $len;
+            });
+        }
+
         $raw = curl_exec($ch);
         $errors = curl_error($ch);
 
@@ -69,16 +87,19 @@ class Request
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $decoded = false;
-            $errors = 'Unable to decode json response.';
+            $errors = $errors ?: 'Unable to decode json response.';
         }
 
         $results = [
-            'endpoint' => $endpoint,
-            'method' => $method,
-            'headers' => $headers,
-            'body' => $payloads,
+            'request' => [
+                'endpoint' => $endpoint,
+                'method' => $method,
+                'headers' => $headers,
+                'body' => $payloads,
+            ],
             'response' => [
-                'decoded' => $decoded,
+                'headers' => $response_headers,
+                'body' => $decoded,
                 'raw' => $raw,
                 'errors' => $errors,
             ],

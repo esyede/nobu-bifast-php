@@ -13,7 +13,7 @@ class Token
 
     public function get()
     {
-        $endpoint = '/v1.0/access-token/b2b';
+        $endpoint = '/v2.0/access-token/b2b';
         $dateAtom = Helper::getDateAtom();
         $strSign = $this->config->getClientKey() . '|' . $dateAtom;
         $privateKey = file_get_contents($this->config->getPrivateKeyFile());
@@ -22,8 +22,8 @@ class Token
             $privateKey
         );
         $body = [
-            'grant_type' => 'client_credentials',
-            'additionalInfo' => (object) [
+            'grantType' => 'client_credentials',
+            'additionalInfo' => [
                 'partnerId' => $this->config->getPartnerId(),
             ],
         ];
@@ -62,7 +62,7 @@ class Token
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             $decoded = false;
-            $errors = 'Unable to decode json response.';
+            $errors = $errors ?: 'Unable to decode json response.';
         }
 
         $results = [

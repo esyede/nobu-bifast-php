@@ -125,7 +125,7 @@ class Inquiry
    {
        $this->validate();
 
-       $endpoint = '/v1.0/account-inquiry/fast-payment';
+       $endpoint = '/v1.1/account-inquiry-external';
        $payloads = $this->toArray();
 
        return $this->request->post($endpoint, $payloads);

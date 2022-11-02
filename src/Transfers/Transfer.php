@@ -100,7 +100,6 @@ class Transfer
             'beneficiaryAccountName' => $this->beneficiaryAccountName,
             'beneficiaryAccountNo' => $this->beneficiaryAccountNo,
             'customerReference' => $this->customerReference,
-            'beneficiaryBankCode' => $this->beneficiaryBankCode,
             'sourceAccountNo' => $this->sourceAccountNo,
             'transactionDate' => $this->transactionDate,
             'additionalInfo' => $this->additionalInfo,
@@ -144,7 +143,7 @@ class Transfer
     {
         $this->validate();
 
-        $endpoint = '/v1.0/transfer/fast-payment';
+        $endpoint = '/v1.1/transfer-interbank';
         $payloads = $this->toArray();
         $payloads['amount'] = [
             'value' => $payloads['amount'],

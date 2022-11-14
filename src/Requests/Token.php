@@ -66,10 +66,12 @@ class Token
         }
 
         $results = [
-            'endpoint' => $endpoint,
-            'method' => 'POST',
-            'headers' => $headers,
-            'body' => $body,
+            'request' => [
+                'endpoint' => $endpoint,
+                'method' => 'POST',
+                'headers' => $headers,
+                'body' => $body,
+            ],
             'response' => [
                 'decoded' => $decoded,
                 'raw' => $raw,

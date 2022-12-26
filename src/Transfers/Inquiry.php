@@ -14,6 +14,7 @@ class Inquiry
     private $sourceAccountBankId;
     private $sourceAccountBankNo;
     private $proxyUser = null;
+    private $amount = 0;
 
     public function __construct(Request $request)
     {
@@ -68,6 +69,12 @@ class Inquiry
         return $this;
     }
 
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
+        return $this;
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Getters
@@ -76,16 +83,29 @@ class Inquiry
 
    public function toArray()
    {
-       return [
+       $data = [
            'beneficiaryBankCode' => $this->beneficiaryBankCode,
-           'beneficiaryAccountNo' => $this->beneficiaryAccountNo,
            'partnerReferenceNo' => $this->partnerReferenceNo,
            'additionalInfo' => [
                 'sourceAccountBankId' => $this->sourceAccountBankId,
                 'sourceAccountBankNo' => $this->sourceAccountBankNo,
-                'proxyUser' => $this->proxyUser
-            ]
+                'amount' => [
+                    'value' => number_format($this->amount, 2, '.', ''),
+                    'currency' => 'IDR'
+                ]
+            ],
+
        ];
+
+       if ($this->beneficiaryAccountNo) {
+            $data['beneficiaryAccountNo'] = $this->beneficiaryAccountNo;
+       }
+
+       if ($this->proxyUser) {
+            $data['additionalInfo']['proxyUser'] = $this->proxyUser;
+       }
+
+       return $data;
    }
 
    public function toJson($jsonOptions = 0)

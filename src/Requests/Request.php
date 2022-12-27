@@ -42,7 +42,7 @@ class Request
             'X-EXTERNAL-ID: ' . $this->uniqueRefDaily,
             'X-PARTNER-ID: ' . $this->config->getPartnerId(),
             'X-IP-ADDRESS: ' . $this->ipAddress,
-            'X-SIGNATURE: ' . $signature
+            'X-SIGNATURE: ' . base64_encode($signature)
         ];
 
         $response_headers = [];

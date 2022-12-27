@@ -11,6 +11,7 @@ class Status
     private $serviceCode;
     private $originalPartnerReferenceNo;
     private $originalReferenceNo;
+    private $amount;
 
     public function __construct(Request $request)
     {
@@ -41,6 +42,14 @@ class Status
         return $this;
     }
 
+    public function setAmount($amount)
+    {
+        $this->amount = $amount . '.00';
+        return $this;
+    }
+
+
+
     /*
     |--------------------------------------------------------------------------
     | Getters
@@ -50,6 +59,7 @@ class Status
     public function toArray()
     {
         return [
+            'amount' => $this->amount,
             'serviceCode' => $this->serviceCode,
             'originalPartnerReferenceNo' => $this->originalPartnerReferenceNo,
             'originalReferenceNo' => $this->originalReferenceNo,
@@ -94,6 +104,10 @@ class Status
 
         $endpoint = '/v1.0/transfer/status';
         $payloads = $this->toArray();
+        $payloads['amount'] = [
+            'value' => $payloads['amount'],
+            'currency' => 'IDR',
+        ];
 
         return $this->request->post($endpoint, $payloads);
     }

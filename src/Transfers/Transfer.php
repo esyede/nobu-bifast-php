@@ -93,17 +93,22 @@ class Transfer
 
     public function toArray()
     {
-        return [
+        $data = [
             'amount' => $this->amount,
             'partnerReferenceNo' => $this->partnerReferenceNo,
             'beneficiaryBankCode' => $this->beneficiaryBankCode,
             'beneficiaryAccountName' => $this->beneficiaryAccountName,
-            'beneficiaryAccountNo' => $this->beneficiaryAccountNo,
             'customerReference' => $this->customerReference,
             'sourceAccountNo' => $this->sourceAccountNo,
             'transactionDate' => $this->transactionDate,
             'additionalInfo' => $this->additionalInfo,
         ];
+
+        if ($this->beneficiaryAccountNo) {
+            $data['beneficiaryAccountNo'] = $this->beneficiaryAccountNo;
+        }
+
+        return $data;
     }
 
     public function toJson($jsonOptions = 0)

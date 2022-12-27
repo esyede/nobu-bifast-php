@@ -69,9 +69,9 @@ class Helper
         }
 
         // localhost, ambil IP ISP
-        if (in_array($ip, ['::1', '127.0.0.1'])) {
-            $ip = file_get_contents('https://api.ipify.org');
-        }
+        // if (in_array($ip, ['::1', '127.0.0.1'])) {
+        //     $ip = file_get_contents('https://api.ipify.org');
+        // }
 
         return $ip;
     }
